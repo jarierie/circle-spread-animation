@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { gsap } from "gsap";
 
@@ -22,6 +22,7 @@ const Container = styled.div`
 
 const Transition = () => {
   const ref = useRef(null);
+  const [mounted, setMounted] = useState(true);
 
   //animation :
 
@@ -31,17 +32,29 @@ const Transition = () => {
       ref.current,
       { opacity: 0, scale: 0 },
       { opacity: 1, scale: 150, duration: 1.5, delay: 2 }
-    ).to(ref.current, { backgroundColor: "#f5f5f5", duration: 1 });
+    ).to(ref.current, {
+      backgroundColor: "#f5f5f5",
+      duration: 1,
+      onComplete: () => setMounted(false),
+    });
   };
 
   useEffect(() => {
     animation();
   }, []);
+
+  useEffect(() => {
+    return () => {
+      console.log("Unmounting");
+    };
+  });
   return (
     <>
-      <Container>
-        <div ref={ref}></div>
-      </Container>
+      {mounted && (
+        <Container>
+          <div ref={ref}></div>
+        </Container>
+      )}
     </>
   );
 };
